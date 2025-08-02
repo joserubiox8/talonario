@@ -596,8 +596,8 @@ class TalonarioRifa {
         console.log('🔧 Iniciando prueba de conexión...');
 
         // Verificar que tenemos una URL válida
-        if (!this.SHEETS_URL || this.SHEETS_URL.includes('TU_SCRIPT_ID_AQUI')) {
-            alert('❌ Error: URL de Google Apps Script no configurada.\n\nDebes reemplazar TU_SCRIPT_ID_AQUI con tu URL real.');
+        if (!this.SHEETS_URL || this.SHEETS_URL.includes('TU_SCRIPT_ID_AQUI') || this.SHEETS_URL.includes('PEGA_AQUI')) {
+            alert('❌ Error: URL de Google Apps Script no configurada.\n\nDebes reemplazar la URL con tu URL real de Apps Script.');
             return;
         }
 
@@ -665,5 +665,4 @@ document.addEventListener('touchend', (e) => {
     }
 
     window.lastTouchEnd = now;
-
 }, false);
