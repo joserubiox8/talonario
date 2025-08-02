@@ -665,4 +665,5 @@ document.addEventListener('touchend', (e) => {
     }
 
     window.lastTouchEnd = now;
+
 }, false);
