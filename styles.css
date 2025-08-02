@@ -178,21 +178,27 @@ body {
 }
 
 #assignBtn {
-    background-color: #28a745;
+    background: linear-gradient(135deg, #28a745, #20c997);
     color: white;
+    box-shadow: 0 3px 8px rgba(40, 167, 69, 0.3);
 }
 
 #assignBtn:hover {
-    background-color: #218838;
+    background: linear-gradient(135deg, #218838, #1ea085);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 12px rgba(40, 167, 69, 0.4);
 }
 
 #cancelBtn {
-    background-color: #6c757d;
+    background: linear-gradient(135deg, #6c757d, #5a6268);
     color: white;
+    box-shadow: 0 3px 8px rgba(108, 117, 125, 0.3);
 }
 
 #cancelBtn:hover {
-    background-color: #5a6268;
+    background: linear-gradient(135deg, #5a6268, #495057);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 12px rgba(108, 117, 125, 0.4);
 }
 
 /* Floating Actions */
@@ -205,7 +211,7 @@ body {
 }
 
 .assign-btn {
-    background-color: #007bff;
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: white;
     border: none;
     padding: 15px 25px;
@@ -218,9 +224,196 @@ body {
 }
 
 .assign-btn:hover {
-    background-color: #0056b3;
+    background: linear-gradient(135deg, #0056b3, #004085);
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.action-btn {
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.view-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+}
+
+.view-btn:hover {
+    background: linear-gradient(135deg, #218838, #1ea085);
+}
+
+.clear-btn {
+    background: linear-gradient(135deg, #dc3545, #e74c3c);
+    color: white;
+}
+
+.clear-btn:hover {
+    background: linear-gradient(135deg, #c82333, #dc2626);
+}
+
+.data-modal {
+    max-width: 90%;
+    width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.search-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.search-box input {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.search-box button {
+    padding: 10px 15px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 8px rgba(0, 123, 255, 0.3);
+}
+
+.search-box button:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 12px rgba(0, 123, 255, 0.4);
+}
+
+.search-result {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.search-result.found {
+    background-color: #d4edda;
+    color: #155724;
+    border: 2px solid #28a745;
+}
+
+.search-result.not-found {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 2px solid #dc3545;
+}
+
+.search-result.available {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 2px solid #ffc107;
+}
+
+.export-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.export-btn-item {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 15px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.export-btn-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+}
+
+.txt-btn {
+    background: linear-gradient(135deg, #6c757d, #5a6268);
+    color: white;
+}
+
+.txt-btn:hover {
+    background: linear-gradient(135deg, #5a6268, #495057);
+}
+
+.csv-btn {
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    color: white;
+}
+
+.csv-btn:hover {
+    background: linear-gradient(135deg, #138496, #117a8b);
+}
+
+.copy-btn {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    color: #212529;
+}
+
+.copy-btn:hover {
+    background: linear-gradient(135deg, #e0a800, #d39e00);
+}
+
+.data-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.data-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.data-item:last-child {
+    border-bottom: none;
+}
+
+.numero-asignado {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.telefono-asignado {
+    color: #666;
 }
 
 /* Responsive */
@@ -248,6 +441,32 @@ body {
         width: 95%;
         margin: 20% auto;
         padding: 15px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .action-btn {
+        padding: 10px 15px;
+        font-size: 0.8rem;
+    }
+    
+    .assign-btn {
+        padding: 12px 20px;
+        font-size: 0.9rem;
+    }
+    
+    .export-buttons {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .export-btn-item {
+        min-width: auto;
+        padding: 10px;
+        font-size: 0.8rem;
     }
 }
 

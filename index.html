@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rifa</title>
+    <title>Talonario de Rifa</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1></h1>
+            <h1>Talonario de Rifa</h1>
         </div>
         
         <div class="talonario-grid" id="talonario">
@@ -34,9 +34,14 @@
             <button id="assignMultiple" class="assign-btn" style="display: none;">
                 Asignar Seleccionados (<span id="selectedCount">0</span>)
             </button>
-            <button id="exportData" class="export-btn">
-                📋 Ver Asignados
-            </button>
+            <div class="action-buttons">
+                <button id="exportData" class="action-btn view-btn">
+                    📋 Ver Asignados
+                </button>
+                <button id="clearData" class="action-btn clear-btn">
+                    🗑️ Limpiar Todo
+                </button>
+            </div>
         </div>
         
         <!-- Modal para mostrar datos -->
@@ -50,9 +55,9 @@
                 </div>
                 <div id="searchResult" class="search-result"></div>
                 <div class="export-buttons">
-                    <button id="downloadTxt">📄 Descargar TXT</button>
-                    <button id="downloadCsv">📊 Descargar CSV</button>
-                    <button id="copyData">📋 Copiar Todo</button>
+                    <button id="downloadTxt" class="export-btn-item txt-btn">📄 Descargar TXT</button>
+                    <button id="downloadCsv" class="export-btn-item csv-btn">📊 Descargar CSV</button>
+                    <button id="copyData" class="export-btn-item copy-btn">📋 Copiar Todo</button>
                 </div>
                 <div id="dataList" class="data-list"></div>
             </div>
@@ -61,6 +66,4 @@
     
     <script src="script.js"></script>
 </body>
-
 </html>
-

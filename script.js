@@ -2,6 +2,8 @@ class TalonarioRifa {
     constructor() {
         this.numeros = {};
         this.numerosSeleccionados = new Set();
+        // IMPORTANTE: Reemplaza esta URL con la tuya de Google Apps Script
+        this.SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyRbVi7MUTzf4maWa_DcgtH-JJ0elnLSIVA5CFWMzn0JHvGJY85C4tEVqorTIEXeK88dQ/exec';
         this.init();
     }
 
@@ -126,7 +128,6 @@ class TalonarioRifa {
         this.guardarDatos();
 
         // Mostrar confirmación
-        const numerosAsignados = Array.from(this.numerosSeleccionados).length;
         alert(`¡Números asignados exitosamente a ${telefono}!`);
     }
 
@@ -139,6 +140,11 @@ class TalonarioRifa {
         // Botón para exportar datos
         document.getElementById('exportData').addEventListener('click', () => {
             this.abrirModalDatos();
+        });
+
+        // Botón para limpiar datos
+        document.getElementById('clearData').addEventListener('click', () => {
+            this.limpiarTodosDatos();
         });
 
         // Modal events
@@ -212,27 +218,103 @@ class TalonarioRifa {
         });
     }
 
-    guardarDatos() {
+    async guardarDatos() {
+        // Guardar localmente como respaldo
         localStorage.setItem('talonarioRifa', JSON.stringify(this.numeros));
+
+        // Guardar en Google Sheets
+        try {
+            const numerosAsignados = Object.keys(this.numeros)
+                .filter(num => this.numeros[num].estado === 'asignado')
+                .map(num => ({
+                    numero: num.padStart(2, '0'),
+                    telefono: this.numeros[num].telefono
+                }));
+
+            const response = await fetch(this.SHEETS_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'save',
+                    numeros: numerosAsignados
+                })
+            });
+
+            if (response.ok) {
+                console.log('✅ Datos guardados en Google Sheets');
+                this.mostrarEstado('Guardado en la nube ☁️', 'success');
+            } else {
+                throw new Error('Error al guardar');
+            }
+        } catch (error) {
+            console.error('❌ Error guardando en Sheets:', error);
+            this.mostrarEstado('Guardado solo localmente ⚠️', 'warning');
+        }
     }
 
-    cargarDatos() {
-        const datosGuardados = localStorage.getItem('talonarioRifa');
-        if (datosGuardados) {
-            this.numeros = JSON.parse(datosGuardados);
-
-            // Actualizar la interfaz
-            Object.keys(this.numeros).forEach(numero => {
-                const numeroElement = document.querySelector(`[data-numero="${numero}"]`);
-                const estado = this.numeros[numero].estado;
-
-                numeroElement.className = `numero ${estado}`;
-
-                if (estado === 'asignado') {
-                    numeroElement.title = `Asignado a: ${this.numeros[numero].telefono}`;
-                }
+    async cargarDatos() {
+        // Intentar cargar desde Google Sheets primero
+        try {
+            const response = await fetch(this.SHEETS_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'load'
+                })
             });
+
+            if (response.ok) {
+                const datosSheets = await response.json();
+
+                // Inicializar todos los números como disponibles
+                for (let i = 0; i <= 99; i++) {
+                    this.numeros[i] = {
+                        estado: 'disponible',
+                        telefono: null
+                    };
+                }
+
+                // Aplicar datos de Sheets
+                Object.keys(datosSheets).forEach(numero => {
+                    if (this.numeros[numero]) {
+                        this.numeros[numero] = datosSheets[numero];
+                    }
+                });
+
+                console.log('✅ Datos cargados desde Google Sheets');
+                this.mostrarEstado('Cargado desde la nube ☁️', 'success');
+
+                // Guardar localmente como respaldo
+                localStorage.setItem('talonarioRifa', JSON.stringify(this.numeros));
+            } else {
+                throw new Error('Error al cargar desde Sheets');
+            }
+        } catch (error) {
+            console.error('❌ Error cargando desde Sheets, usando datos locales:', error);
+            this.mostrarEstado('Cargado localmente 💾', 'warning');
+
+            // Fallback a localStorage
+            const datosGuardados = localStorage.getItem('talonarioRifa');
+            if (datosGuardados) {
+                this.numeros = JSON.parse(datosGuardados);
+            }
         }
+
+        // Actualizar la interfaz
+        Object.keys(this.numeros).forEach(numero => {
+            const numeroElement = document.querySelector(`[data-numero="${numero}"]`);
+            const estado = this.numeros[numero].estado;
+
+            numeroElement.className = `numero ${estado}`;
+
+            if (estado === 'asignado') {
+                numeroElement.title = `Asignado a: ${this.numeros[numero].telefono}`;
+            }
+        });
     }
 
     abrirModalDatos() {
@@ -376,6 +458,119 @@ class TalonarioRifa {
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
+    }
+
+    mostrarEstado(mensaje, tipo) {
+        // Crear o actualizar el indicador de estado
+        let statusDiv = document.getElementById('connectionStatus');
+        if (!statusDiv) {
+            statusDiv = document.createElement('div');
+            statusDiv.id = 'connectionStatus';
+            statusDiv.style.cssText = `
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                padding: 8px 12px;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: bold;
+                z-index: 1000;
+                transition: all 0.3s ease;
+            `;
+            document.body.appendChild(statusDiv);
+        }
+
+        statusDiv.textContent = mensaje;
+
+        if (tipo === 'success') {
+            statusDiv.style.backgroundColor = '#d4edda';
+            statusDiv.style.color = '#155724';
+            statusDiv.style.border = '1px solid #c3e6cb';
+        } else if (tipo === 'warning') {
+            statusDiv.style.backgroundColor = '#fff3cd';
+            statusDiv.style.color = '#856404';
+            statusDiv.style.border = '1px solid #ffeaa7';
+        } else {
+            statusDiv.style.backgroundColor = '#f8d7da';
+            statusDiv.style.color = '#721c24';
+            statusDiv.style.border = '1px solid #f5c6cb';
+        }
+
+        // Ocultar después de 3 segundos
+        setTimeout(() => {
+            if (statusDiv) {
+                statusDiv.style.opacity = '0';
+                setTimeout(() => {
+                    if (statusDiv && statusDiv.parentNode) {
+                        statusDiv.parentNode.removeChild(statusDiv);
+                    }
+                }, 300);
+            }
+        }, 3000);
+    }
+
+    async limpiarTodosDatos() {
+        const confirmacion = confirm(
+            '⚠️ ATENCIÓN ⚠️\n\n' +
+            'Esto borrará TODOS los números asignados tanto localmente como en Google Sheets.\n\n' +
+            '¿Estás completamente seguro de que quieres continuar?'
+        );
+        
+        if (!confirmacion) return;
+
+        const segundaConfirmacion = confirm(
+            '🚨 ÚLTIMA CONFIRMACIÓN 🚨\n\n' +
+            'Esta acción NO se puede deshacer.\n' +
+            'Se perderán todos los datos de participantes.\n\n' +
+            '¿Proceder con el borrado completo?'
+        );
+        
+        if (!segundaConfirmacion) return;
+
+        try {
+            // Limpiar Google Sheets
+            const response = await fetch(this.SHEETS_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'save',
+                    numeros: [] // Array vacío para limpiar
+                })
+            });
+
+            if (response.ok) {
+                console.log('✅ Datos borrados de Google Sheets');
+                this.mostrarEstado('Datos borrados de la nube ☁️', 'success');
+            } else {
+                throw new Error('Error al borrar de Sheets');
+            }
+        } catch (error) {
+            console.error('❌ Error borrando de Sheets:', error);
+            this.mostrarEstado('Error borrando de la nube ⚠️', 'error');
+        }
+
+        // Limpiar datos locales
+        localStorage.removeItem('talonarioRifa');
+        
+        // Reinicializar todos los números
+        for (let i = 0; i <= 99; i++) {
+            this.numeros[i] = {
+                estado: 'disponible',
+                telefono: null
+            };
+            
+            const numeroElement = document.querySelector(`[data-numero="${i}"]`);
+            numeroElement.className = 'numero disponible';
+            numeroElement.title = '';
+        }
+
+        // Limpiar selecciones actuales
+        this.numerosSeleccionados.clear();
+        this.actualizarBotonAsignar();
+
+        alert('✅ Talonario limpiado completamente.\nTodos los números están ahora disponibles.');
     }
 
     // Método para resetear el talonario (útil para desarrollo)
