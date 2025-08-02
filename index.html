@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talonario de Rifa</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Talonario de Rifa</h1>
+        </div>
+        
+        <div class="talonario-grid" id="talonario">
+            <!-- Los números se generarán con JavaScript -->
+        </div>
+        
+        <!-- Modal para asignar participante -->
+        <div class="modal" id="modal">
+            <div class="modal-content">
+                <span class="close" id="closeModal">&times;</span>
+                <h2>Asignar Número(s)</h2>
+                <p>Números seleccionados: <span id="selectedNumbers"></span></p>
+                <input type="tel" id="phoneInput" placeholder="Número de teléfono" maxlength="15">
+                <div class="modal-buttons">
+                    <button id="assignBtn">Asignar</button>
+                    <button id="cancelBtn">Cancelar</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="floating-actions">
+            <button id="assignMultiple" class="assign-btn" style="display: none;">
+                Asignar Seleccionados (<span id="selectedCount">0</span>)
+            </button>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
