@@ -147,6 +147,11 @@ class TalonarioRifa {
             this.limpiarTodosDatos();
         });
 
+        // Botón para probar conexión
+        document.getElementById('testConnection').addEventListener('click', () => {
+            this.probarConexion();
+        });
+
         // Modal events
         document.getElementById('closeModal').addEventListener('click', () => {
             this.cerrarModal();
@@ -231,6 +236,9 @@ class TalonarioRifa {
                     telefono: this.numeros[num].telefono
                 }));
 
+            console.log('🔄 Intentando guardar en Sheets:', numerosAsignados);
+            console.log('🔗 URL:', this.SHEETS_URL);
+
             const response = await fetch(this.SHEETS_URL, {
                 method: 'POST',
                 headers: {
@@ -242,15 +250,20 @@ class TalonarioRifa {
                 })
             });
 
+            console.log('📡 Respuesta del servidor:', response.status, response.statusText);
+            
             if (response.ok) {
-                console.log('✅ Datos guardados en Google Sheets');
+                const result = await response.text();
+                console.log('✅ Respuesta completa:', result);
                 this.mostrarEstado('Guardado en la nube ☁️', 'success');
             } else {
-                throw new Error('Error al guardar');
+                const errorText = await response.text();
+                console.error('❌ Error del servidor:', errorText);
+                throw new Error(`Error ${response.status}: ${errorText}`);
             }
         } catch (error) {
             console.error('❌ Error guardando en Sheets:', error);
-            this.mostrarEstado('Guardado solo localmente ⚠️', 'warning');
+            this.mostrarEstado(`Error: ${error.message} ⚠️`, 'error');
         }
     }
 
@@ -571,6 +584,44 @@ class TalonarioRifa {
         this.actualizarBotonAsignar();
 
         alert('✅ Talonario limpiado completamente.\nTodos los números están ahora disponibles.');
+    }
+
+    async probarConexion() {
+        console.log('🔧 Iniciando prueba de conexión...');
+        this.mostrarEstado('Probando conexión... 🔄', 'warning');
+        
+        try {
+            console.log('🔗 URL de prueba:', this.SHEETS_URL);
+            
+            const response = await fetch(this.SHEETS_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'test'
+                })
+            });
+
+            console.log('📡 Status:', response.status);
+            console.log('📡 Status Text:', response.statusText);
+            console.log('📡 Headers:', [...response.headers.entries()]);
+            
+            const responseText = await response.text();
+            console.log('📄 Respuesta completa:', responseText);
+            
+            if (response.ok) {
+                this.mostrarEstado('✅ Conexión exitosa!', 'success');
+                alert(`✅ Conexión exitosa!\n\nStatus: ${response.status}\nRespuesta: ${responseText}`);
+            } else {
+                this.mostrarEstado('❌ Error de conexión', 'error');
+                alert(`❌ Error de conexión\n\nStatus: ${response.status}\nError: ${responseText}`);
+            }
+        } catch (error) {
+            console.error('❌ Error en prueba:', error);
+            this.mostrarEstado('❌ Error de red', 'error');
+            alert(`❌ Error de red:\n${error.message}\n\nRevisa la consola para más detalles.`);
+        }
     }
 
     // Método para resetear el talonario (útil para desarrollo)
