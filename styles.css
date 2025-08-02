@@ -40,7 +40,7 @@ body {
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(10, 1fr);
     gap: 4px;
-    margin-bottom: 120px;
+    margin-bottom: 200px;
     max-width: 100%;
     aspect-ratio: 1;
 }
@@ -204,14 +204,14 @@ body {
 /* Floating Actions */
 .floating-actions {
     position: fixed;
-    bottom: 20px;
+    bottom: 15px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 100;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .assign-btn {
@@ -235,21 +235,21 @@ body {
 
 .action-buttons {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
     justify-content: center;
-    margin-top: 10px;
+    margin-top: 8px;
 }
 
 .action-btn {
     border: none;
-    padding: 12px 20px;
-    border-radius: 25px;
-    font-size: 0.9rem;
+    padding: 10px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
 
 .action-btn:hover {
@@ -445,54 +445,57 @@ body {
         margin: 5px;
         border-radius: 10px;
     }
-    
+
     .header h1 {
         font-size: 1.5rem;
         margin-bottom: 15px;
     }
-    
+
     .talonario-grid {
         gap: 3px;
     }
-    
+
     .numero {
         font-size: 0.9rem;
     }
-    
+
     .modal-content {
         width: 95%;
         margin: 20% auto;
         padding: 15px;
     }
-    
+
     .action-buttons {
         flex-direction: column;
-        gap: 8px;
+        gap: 6px;
+        margin-top: 5px;
     }
-    
+
     .action-btn {
-        padding: 10px 15px;
-        font-size: 0.8rem;
+        padding: 8px 12px;
+        font-size: 0.75rem;
+        border-radius: 15px;
     }
-    
+
     .assign-btn {
         padding: 12px 20px;
         font-size: 0.9rem;
     }
-    
+
     .talonario-grid {
-        margin-bottom: 140px;
+        margin-bottom: 220px;
     }
-    
+
     .floating-actions {
-        bottom: 10px;
+        bottom: 8px;
+        gap: 5px;
     }
-    
+
     .export-buttons {
         flex-direction: column;
         gap: 8px;
     }
-    
+
     .export-btn-item {
         min-width: auto;
         padding: 10px;
@@ -504,14 +507,25 @@ body {
     .container {
         padding: 8px;
     }
-    
+
     .talonario-grid {
         gap: 2px;
+        margin-bottom: 240px;
     }
-    
+
     .numero {
         font-size: 0.8rem;
         border-width: 1px;
+    }
+
+    .action-btn {
+        padding: 6px 10px;
+        font-size: 0.7rem;
+    }
+
+    .floating-actions {
+        bottom: 5px;
+        gap: 4px;
     }
 }
 
@@ -519,11 +533,11 @@ body {
     .container {
         max-width: 600px;
     }
-    
+
     .talonario-grid {
         gap: 6px;
     }
-    
+
     .numero {
         font-size: 1.2rem;
     }
