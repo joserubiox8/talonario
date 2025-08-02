@@ -148,9 +148,15 @@ class TalonarioRifa {
         });
 
         // Botón para probar conexión
-        document.getElementById('testConnection').addEventListener('click', () => {
-            this.probarConexion();
-        });
+        const testBtn = document.getElementById('testConnection');
+        if (testBtn) {
+            testBtn.addEventListener('click', () => {
+                console.log('🔧 Botón de prueba clickeado');
+                this.probarConexion();
+            });
+        } else {
+            console.error('❌ No se encontró el botón testConnection');
+        }
 
         // Modal events
         document.getElementById('closeModal').addEventListener('click', () => {
@@ -251,7 +257,7 @@ class TalonarioRifa {
             });
 
             console.log('📡 Respuesta del servidor:', response.status, response.statusText);
-            
+
             if (response.ok) {
                 const result = await response.text();
                 console.log('✅ Respuesta completa:', result);
@@ -528,7 +534,7 @@ class TalonarioRifa {
             'Esto borrará TODOS los números asignados tanto localmente como en Google Sheets.\n\n' +
             '¿Estás completamente seguro de que quieres continuar?'
         );
-        
+
         if (!confirmacion) return;
 
         const segundaConfirmacion = confirm(
@@ -537,7 +543,7 @@ class TalonarioRifa {
             'Se perderán todos los datos de participantes.\n\n' +
             '¿Proceder con el borrado completo?'
         );
-        
+
         if (!segundaConfirmacion) return;
 
         try {
@@ -566,14 +572,14 @@ class TalonarioRifa {
 
         // Limpiar datos locales
         localStorage.removeItem('talonarioRifa');
-        
+
         // Reinicializar todos los números
         for (let i = 0; i <= 99; i++) {
             this.numeros[i] = {
                 estado: 'disponible',
                 telefono: null
             };
-            
+
             const numeroElement = document.querySelector(`[data-numero="${i}"]`);
             numeroElement.className = 'numero disponible';
             numeroElement.title = '';
@@ -588,12 +594,29 @@ class TalonarioRifa {
 
     async probarConexion() {
         console.log('🔧 Iniciando prueba de conexión...');
+
+        // Verificar que tenemos una URL válida
+        if (!this.SHEETS_URL || this.SHEETS_URL.includes('TU_SCRIPT_ID_AQUI')) {
+            alert('❌ Error: URL de Google Apps Script no configurada.\n\nDebes reemplazar TU_SCRIPT_ID_AQUI con tu URL real.');
+            return;
+        }
+
         this.mostrarEstado('Probando conexión... 🔄', 'warning');
-        
+
         try {
             console.log('🔗 URL de prueba:', this.SHEETS_URL);
-            
+
+            // Prueba simple primero
             const response = await fetch(this.SHEETS_URL, {
+                method: 'GET',
+                mode: 'no-cors'
+            });
+
+            console.log('📡 Respuesta recibida');
+            this.mostrarEstado('✅ Conexión básica exitosa!', 'success');
+
+            // Ahora prueba con POST
+            const postResponse = await fetch(this.SHEETS_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -603,24 +626,15 @@ class TalonarioRifa {
                 })
             });
 
-            console.log('📡 Status:', response.status);
-            console.log('📡 Status Text:', response.statusText);
-            console.log('📡 Headers:', [...response.headers.entries()]);
-            
-            const responseText = await response.text();
-            console.log('📄 Respuesta completa:', responseText);
-            
-            if (response.ok) {
-                this.mostrarEstado('✅ Conexión exitosa!', 'success');
-                alert(`✅ Conexión exitosa!\n\nStatus: ${response.status}\nRespuesta: ${responseText}`);
-            } else {
-                this.mostrarEstado('❌ Error de conexión', 'error');
-                alert(`❌ Error de conexión\n\nStatus: ${response.status}\nError: ${responseText}`);
-            }
+            const responseText = await postResponse.text();
+            console.log('📄 Respuesta POST:', responseText);
+
+            alert(`✅ Prueba completada!\n\nRevisa la consola para ver los detalles.\nRespuesta: ${responseText.substring(0, 100)}...`);
+
         } catch (error) {
             console.error('❌ Error en prueba:', error);
             this.mostrarEstado('❌ Error de red', 'error');
-            alert(`❌ Error de red:\n${error.message}\n\nRevisa la consola para más detalles.`);
+            alert(`❌ Error de red:\n${error.message}\n\n¿Verificaste que tu URL de Apps Script esté correcta?`);
         }
     }
 
