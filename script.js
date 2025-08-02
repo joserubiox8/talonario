@@ -158,6 +158,15 @@ class TalonarioRifa {
             console.error('❌ No se encontró el botón testConnection');
         }
 
+        // Botón para recargar datos
+        const reloadBtn = document.getElementById('reloadData');
+        if (reloadBtn) {
+            reloadBtn.addEventListener('click', () => {
+                console.log('🔄 Recargando datos...');
+                this.recargarDatos();
+            });
+        }
+
         // Modal events
         document.getElementById('closeModal').addEventListener('click', () => {
             this.cerrarModal();
@@ -267,23 +276,77 @@ class TalonarioRifa {
     }
 
     async cargarDatos() {
-        // Por ahora usar solo datos locales debido a limitaciones de CORS
-        // Los datos se sincronizan cuando guardas (que sí funciona)
-        console.log('📱 Cargando datos locales...');
+        // Intentar cargar desde Google Sheets
+        console.log('☁️ Cargando desde Google Sheets...');
 
-        const datosGuardados = localStorage.getItem('talonarioRifa');
-        if (datosGuardados) {
-            this.numeros = JSON.parse(datosGuardados);
-            this.mostrarEstado('Datos cargados 💾', 'success');
-        } else {
-            // Inicializar todos los números como disponibles
-            for (let i = 0; i <= 99; i++) {
-                this.numeros[i] = {
-                    estado: 'disponible',
-                    telefono: null
-                };
+        try {
+            // Usar GET con parámetros para cargar datos
+            const loadUrl = `${this.SHEETS_URL}?action=load&_=${Date.now()}`;
+            console.log('🔗 URL de carga:', loadUrl);
+
+            const response = await fetch(loadUrl, {
+                method: 'GET'
+            });
+
+            console.log('📡 Status de carga:', response.status, response.statusText);
+
+            if (response.ok) {
+                const responseText = await response.text();
+                console.log('📄 Respuesta cruda:', responseText);
+
+                const datosSheets = JSON.parse(responseText);
+                console.log('📊 Datos parseados:', datosSheets);
+
+                // Inicializar todos los números como disponibles
+                for (let i = 0; i <= 99; i++) {
+                    this.numeros[i] = {
+                        estado: 'disponible',
+                        telefono: null
+                    };
+                }
+
+                // Contar cuántos datos vamos a aplicar
+                let numerosAsignados = 0;
+
+                // Aplicar datos de Sheets si existen
+                if (datosSheets && typeof datosSheets === 'object') {
+                    Object.keys(datosSheets).forEach(numero => {
+                        const num = parseInt(numero);
+                        if (!isNaN(num) && num >= 0 && num <= 99 && datosSheets[numero]) {
+                            this.numeros[num] = datosSheets[numero];
+                            numerosAsignados++;
+                            console.log(`📝 Aplicando número ${num}:`, datosSheets[numero]);
+                        }
+                    });
+                }
+
+                console.log(`✅ ${numerosAsignados} números cargados desde Google Sheets`);
+                this.mostrarEstado(`Cargado desde la nube (${numerosAsignados} números) ☁️`, 'success');
+
+                // Guardar localmente como respaldo
+                localStorage.setItem('talonarioRifa', JSON.stringify(this.numeros));
+
+            } else {
+                throw new Error(`Error ${response.status}`);
             }
-            this.mostrarEstado('Talonario nuevo ✨', 'success');
+
+        } catch (error) {
+            console.error('❌ Error cargando desde Sheets, usando datos locales:', error);
+            this.mostrarEstado('Cargado localmente 💾', 'warning');
+
+            // Fallback a localStorage
+            const datosGuardados = localStorage.getItem('talonarioRifa');
+            if (datosGuardados) {
+                this.numeros = JSON.parse(datosGuardados);
+            } else {
+                // Inicializar todos los números como disponibles
+                for (let i = 0; i <= 99; i++) {
+                    this.numeros[i] = {
+                        estado: 'disponible',
+                        telefono: null
+                    };
+                }
+            }
         }
 
         // Actualizar la interfaz
@@ -588,6 +651,34 @@ class TalonarioRifa {
             console.error('❌ Error en prueba:', error);
             this.mostrarEstado('❌ Error de red', 'error');
             alert(`❌ Error de red:\n${error.message}\n\n¿Verificaste que tu URL de Apps Script esté correcta?`);
+        }
+    }
+
+    async recargarDatos() {
+        this.mostrarEstado('Recargando desde la nube... 🔄', 'warning');
+
+        try {
+            await this.cargarDatos();
+
+            // Actualizar la interfaz
+            Object.keys(this.numeros).forEach(numero => {
+                const numeroElement = document.querySelector(`[data-numero="${numero}"]`);
+                const estado = this.numeros[numero].estado;
+
+                numeroElement.className = `numero ${estado}`;
+
+                if (estado === 'asignado') {
+                    numeroElement.title = `Asignado a: ${this.numeros[numero].telefono}`;
+                } else {
+                    numeroElement.title = '';
+                }
+            });
+
+            alert('✅ Datos recargados exitosamente desde Google Sheets');
+
+        } catch (error) {
+            console.error('❌ Error recargando:', error);
+            alert('❌ Error al recargar datos. Revisa la consola.');
         }
     }
 

@@ -284,6 +284,15 @@ body {
     background: linear-gradient(135deg, #5a32a3, #4c2a85);
 }
 
+.reload-btn {
+    background: linear-gradient(135deg, #fd7e14, #e8590c);
+    color: white;
+}
+
+.reload-btn:hover {
+    background: linear-gradient(135deg, #e8590c, #d63384);
+}
+
 .data-modal {
     max-width: 90%;
     width: 600px;
