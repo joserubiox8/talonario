@@ -34,6 +34,28 @@
             <button id="assignMultiple" class="assign-btn" style="display: none;">
                 Asignar Seleccionados (<span id="selectedCount">0</span>)
             </button>
+            <button id="exportData" class="export-btn">
+                📋 Ver Asignados
+            </button>
+        </div>
+        
+        <!-- Modal para mostrar datos -->
+        <div class="modal" id="dataModal">
+            <div class="modal-content data-modal">
+                <span class="close" id="closeDataModal">&times;</span>
+                <h2>Números Asignados</h2>
+                <div class="search-box">
+                    <input type="text" id="searchNumber" placeholder="Buscar número ganador (ej: 05, 23)">
+                    <button id="searchBtn">🔍 Buscar</button>
+                </div>
+                <div id="searchResult" class="search-result"></div>
+                <div class="export-buttons">
+                    <button id="downloadTxt">📄 Descargar TXT</button>
+                    <button id="downloadCsv">📊 Descargar CSV</button>
+                    <button id="copyData">📋 Copiar Todo</button>
+                </div>
+                <div id="dataList" class="data-list"></div>
+            </div>
         </div>
     </div>
     
